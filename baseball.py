@@ -2,8 +2,8 @@ import random
 from  multiprocessing import Pool
 
 
-num_threads = 4
-num_seasons = 10
+num_threads = 16
+num_seasons = 100000
 
 avgs = [0] *num_threads
 
