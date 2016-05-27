@@ -1,13 +1,14 @@
 import random
-import threading
+from  multiprocessing import Pool
 
 
-num_threads = 8
+num_threads = 4
+num_seasons = 10
 
 avgs = [0] *num_threads
 
-def compute(myID, num_seasons):
-    print "Starting thread", myID, "for num_seasons", num_seasons
+def compute(num_seasons):
+    print "Starting thread for num_seasons", num_seasons
 
     al_east = {"Yankees":0, "Sox":0, "Jays":0, "Rays":0, "Orioles":0}
     avg = {"Yankees":0.0, "Sox":0.0, "Jays":0.0, "Rays":0.0, "Orioles":0.0}
@@ -33,25 +34,21 @@ def compute(myID, num_seasons):
 
     first_avg /= num_seasons
 
-    avgs[myID] = first_avg
     return first_avg
 
-try:
-    threads = []
-    for i in range(num_threads):
-        threads.append(threading.Thread(target = compute, args = (i,10000)))
-        
-    for t in threads:
-        t.start()
+pool = Pool(processes = num_threads)
 
-    for t in threads:
-        t.join()
+threads = []
 
-    first_avg = 0.0
-    for avg in avgs:
-        first_avg += avg
-    
-    print first_avg/num_threads
-except:
-    print "Oh noes!"
+print "spinning up threads"
+avgs = pool.map(compute, [num_seasons] * num_threads) 
 
+print "joining threads"
+pool.close()
+pool.join()
+
+first_avg = 0.0
+for avg in avgs:
+    first_avg += avg
+
+print first_avg/num_threads
